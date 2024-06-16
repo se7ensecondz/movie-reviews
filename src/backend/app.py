@@ -16,8 +16,8 @@ def build_options(*args):
 
 
 def get_filters(genre, year):
-    genre_filter = '' if genre == 'All' else f'AND genre="{genre}" '
-    year_filter = '' if year == 'All' else f'AND year={year} '
+    genre_filter = '' if genre == "All" else f"AND genre='{genre}' "
+    year_filter = '' if year == "All" else f"AND year={year} "
     return 'WHERE 1=1 ' + genre_filter + year_filter
 
 
