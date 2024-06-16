@@ -1,27 +1,30 @@
-import requests
+import os
 
 import duckdb
+import requests
+
+from src.backend.database.utils import DB
 
 url = "https://api.themoviedb.org/3/genre/movie/list?language=en"
 headers = {
     "accept": "application/json",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2MTNjZjYzYzE3YTRlNjU4OTQ5MDM3NmE1M2EyZmU3ZiIsInN1YiI6IjY2NjRiZTYxMGE2YTRjN2FkMWU5OTdlNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.XzPdW6GSVc-zhM1WgxDcTQWzUPyUTIRyiurHv0TLSEc"
+    "Authorization": f"Bearer {os.environ.get('BEARER_TOKEN')}"
 }
 response = requests.get(url, headers=headers)
 genres = response.json().get('genres')
 
 
-def drop_genres():
+def drop_genres_table():
     conn.execute("""
         DROP TABLE IF EXISTS genres
     """)
 
 
-def create_genres():
+def create_genres_table():
     conn.execute("""CREATE TABLE IF NOT EXISTS genres(name VARCHAR PRIMARY KEY, id INTEGER)""")
 
 
-def insert_genres():
+def insert_into_genres():
     interested_genres = {
         'Action',
         'Comedy',
@@ -37,9 +40,9 @@ def insert_genres():
 
 
 if __name__ == '__main__':
-    conn = duckdb.connect('src/backend/database/dev.duckdb')
-    drop_genres()
-    create_genres()
-    insert_genres()
+    conn = duckdb.connect(DB)
+    drop_genres_table()
+    create_genres_table()
+    insert_into_genres()
     conn.commit()
     conn.close()

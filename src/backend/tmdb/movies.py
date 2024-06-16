@@ -1,21 +1,23 @@
+import os
 import time
 
 import duckdb
 import requests
 
-from src.backend.utils import get_years, get_genre_ids, get_table_name
+from src.backend.database.utils import DB
+from src.backend.utils import get_years, get_genre_ids
 
 
-def fetch_movie(year, genre, genre_id):
+def get_movie(year, genre, genre_id):
     url = (f"https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1"
            f"&primary_release_year={year}&sort_by=popularity.desc&with_genres={genre_id}")
     headers = {
         "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2MTNjZjYzYzE3YTRlNjU4OTQ5MDM3NmE1M2EyZmU3ZiIsInN1YiI6IjY2NjRiZTYxMGE2YTRjN2FkMWU5OTdlNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.XzPdW6GSVc-zhM1WgxDcTQWzUPyUTIRyiurHv0TLSEc"
+        "Authorization": f"Bearer {os.environ.get('BEARER_TOKEN')}"
     }
     response = requests.get(url, headers=headers)
-    top10_popular = response.json()['results'][:10]
-    for movie in top10_popular:
+    top15_popular = response.json()['results'][:15]
+    for movie in top15_popular:
         movie_id = movie['id']
         movie_title = movie['title']
         movie_genre = genre
@@ -29,7 +31,7 @@ def fetch_movie(year, genre, genre_id):
             movie_poster_path = None
         conn.execute(
             f"""
-                INSERT OR REPLACE INTO {get_table_name(genre)} VALUES (
+                INSERT OR REPLACE INTO movies VALUES (
                     {movie_id}, 
                     '{movie_title.replace("'", "''")}', 
                     '{movie_genre}', 
@@ -42,28 +44,28 @@ def fetch_movie(year, genre, genre_id):
         )
 
 
-def create_movie(genre):
+def create_movies_table():
     conn.execute(
         f"""
-            CREATE TABLE IF NOT EXISTS {get_table_name(genre)}(id INTEGER PRIMARY KEY, title VARCHAR, genre VARCHAR, 
+            CREATE TABLE IF NOT EXISTS movies (id INTEGER PRIMARY KEY, title VARCHAR, genre VARCHAR, 
             popularity FLOAT, year INTEGER, release_date DATE, poster_path VARCHAR)
         """
     )
 
 
-def fetch_movies(years, genre, genre_id):
+def get_movies(years, genre, genre_id):
     for year in years:
-        fetch_movie(year, genre, genre_id)
-        time.sleep(1)
+        get_movie(year, genre, genre_id)
+        time.sleep(0.5)
 
 
 if __name__ == '__main__':
-    conn = duckdb.connect('src/backend/database/dev.duckdb')
+    conn = duckdb.connect(DB)
     years = get_years()
     genre_ids = get_genre_ids()
-    for g, gid in genre_ids.items():
-        create_movie(g)
-        fetch_movies(years, g, gid)
-        time.sleep(1)
+    create_movies_table()
+    for genre, genre_id in genre_ids.items():
+        get_movies(years, genre, genre_id)
+        time.sleep(0.5)
     conn.commit()
     conn.close()
