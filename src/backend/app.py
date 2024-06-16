@@ -2,7 +2,8 @@ import duckdb
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-from src.backend.utils import get_years, get_genre_ids, get_table_name
+from src.backend.database.utils import DB
+from src.backend.utils import get_years, get_genre_ids
 
 app = FastAPI()
 
@@ -12,6 +13,12 @@ def build_options(*args):
     for arg in args:
         options += f"""<option value="{arg}">{arg}</option>"""
     return options
+
+
+def get_filters(genre, year):
+    genre_filter = '' if genre == 'All' else f'AND genre="{genre}" '
+    year_filter = '' if year == 'All' else f'AND year={year} '
+    return 'WHERE 1=1 ' + genre_filter + year_filter
 
 
 @app.get("/")
@@ -42,15 +49,18 @@ def main():
 
 @app.get('/search')
 def search(genre, year):
-    conn = duckdb.connect('src/backend/database/dev.duckdb')
+    conn = duckdb.connect(DB)
     movies = conn.execute(f"""
-        SELECT title, popularity, release_date, poster_path FROM {get_table_name(genre)}
-        WHERE year={year}
+        SELECT title, popularity, release_date, poster_path FROM movies
+        {get_filters(genre, year)}
         ORDER BY popularity DESC
         LIMIT 10
     """).fetchall()
 
+    genre = '' if genre == 'All' else genre
+    year = 'All Time' if year == 'All' else year
     html_content = f'<h2>Top 10 {genre} Movies of {year}</h2> <br><br>'
+    html_content = ' '.join(html_content.split())
     for m in movies:
         html_content += f"""
          <div style="vertical-align:middle" align="center">
@@ -67,4 +77,3 @@ def search(genre, year):
         """
 
     return HTMLResponse(content=html_content)
-
