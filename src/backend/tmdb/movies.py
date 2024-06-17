@@ -8,8 +8,8 @@ from src.backend.database.utils import DB
 from src.backend.utils import get_years, get_genre_ids
 
 
-def get_movie(year, genre, genre_id):
-    url = (f"https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=10"
+def get_movie(conn, year, genre, genre_id):
+    url = (f"https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1"
            f"&primary_release_year={year}&sort_by=popularity.desc&with_genres={genre_id}")
     headers = {
         "accept": "application/json",
@@ -42,30 +42,27 @@ def get_movie(year, genre, genre_id):
                 )
             """
         )
+    conn.commit()
 
 
-def create_movies_table():
+def create_movies_table(conn):
     conn.execute(
         f"""
-            CREATE TABLE IF NOT EXISTS movies (id INTEGER PRIMARY KEY, title VARCHAR, genre VARCHAR, 
-            popularity FLOAT, year INTEGER, release_date DATE, poster_path VARCHAR)
+            CREATE TABLE IF NOT EXISTS movies (id INTEGER, title VARCHAR, genre VARCHAR, 
+            popularity FLOAT, year INTEGER, release_date DATE, poster_path VARCHAR, PRIMARY KEY (id, genre))
         """
     )
-
-
-def get_movies(years, genre, genre_id):
-    for year in years:
-        get_movie(year, genre, genre_id)
-        time.sleep(1)
+    conn.commit()
 
 
 if __name__ == '__main__':
-    conn = duckdb.connect(DB)
     years = get_years()
     genre_ids = get_genre_ids()
-    create_movies_table()
+
+    conn = duckdb.connect(DB)
+    create_movies_table(conn)
     for genre, genre_id in genre_ids.items():
-        get_movies(years, genre, genre_id)
-        time.sleep(1)
-    conn.commit()
+        for year in years:
+            get_movie(conn, year, genre, genre_id)
+            time.sleep(1)
     conn.close()
