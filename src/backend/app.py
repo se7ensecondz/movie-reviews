@@ -59,7 +59,7 @@ def search(genre, year):
 
     genre = '' if genre == 'All' else genre
     year = 'All Time' if year == 'All' else year
-    html_content = f'<h2>Top 10 {genre} Movies of {year}</h2> <br><br>'
+    html_content = f'<h2>Top {genre} Movies of {year}</h2> <br><br>'
     html_content = ' '.join(html_content.split())
     for m in movies:
         html_content += f"""
