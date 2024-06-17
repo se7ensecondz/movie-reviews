@@ -1,3 +1,5 @@
+import duckdb
+
 from datetime import datetime
 
 from src.backend.database.utils import DB
@@ -8,6 +10,7 @@ def get_years() -> list[int]:
 
 
 def get_genre_ids() -> dict:
-    import duckdb
     conn = duckdb.connect(DB)
-    return dict(conn.query("""SELECT * FROM genres""").fetchall())
+    genres = dict(conn.query("""SELECT * FROM genres""").fetchall())
+    conn.close()
+    return genres
