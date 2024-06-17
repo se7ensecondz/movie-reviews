@@ -51,7 +51,7 @@ def main():
 def search(genre, year):
     conn = duckdb.connect(DB)
     movies = conn.execute(f"""
-        SELECT Distinct title, popularity, release_date, poster_path FROM movies
+        SELECT DISTINCT title, MAX(popularity) OVER (PARTITION BY title) AS popularity, release_date, poster_path FROM movies
         {get_filters(genre, year)}
         ORDER BY popularity DESC
         LIMIT 10
