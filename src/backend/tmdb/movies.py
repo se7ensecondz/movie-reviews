@@ -9,7 +9,7 @@ from src.backend.utils import get_years, get_genre_ids
 
 
 def get_movie(year, genre, genre_id):
-    url = (f"https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1"
+    url = (f"https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=10"
            f"&primary_release_year={year}&sort_by=popularity.desc&with_genres={genre_id}")
     headers = {
         "accept": "application/json",
@@ -56,7 +56,7 @@ def create_movies_table():
 def get_movies(years, genre, genre_id):
     for year in years:
         get_movie(year, genre, genre_id)
-        time.sleep(0.5)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
@@ -66,6 +66,6 @@ if __name__ == '__main__':
     create_movies_table()
     for genre, genre_id in genre_ids.items():
         get_movies(years, genre, genre_id)
-        time.sleep(0.5)
+        time.sleep(1)
     conn.commit()
     conn.close()
