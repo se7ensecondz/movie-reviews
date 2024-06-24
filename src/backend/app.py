@@ -2,10 +2,17 @@ import duckdb
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-from src.backend.database.utils import DB
-from src.backend.utils import get_years, get_genre_ids
+from data_analyzer import build_query
+from healthcheck import healthcheck_router
+from database.utils import DB
+from prometheus_metrics import make_metrics_app
+from utils import get_years, get_genre_ids
 
-app = FastAPI()
+app = FastAPI(debug=False)
+app.include_router(healthcheck_router)
+
+metrics_app = make_metrics_app()
+app.mount("/metrics", metrics_app)
 
 
 def build_options(*args):
@@ -13,12 +20,6 @@ def build_options(*args):
     for arg in args:
         options += f"""<option value="{arg}">{arg}</option>"""
     return options
-
-
-def get_filters(genre, year):
-    genre_filter = '' if genre == "All" else f"AND genre='{genre}' "
-    year_filter = '' if year == "All" else f"AND year={year} "
-    return 'WHERE 1=1 ' + genre_filter + year_filter
 
 
 @app.get("/")
@@ -50,12 +51,8 @@ def main():
 @app.get('/search')
 def search(genre, year):
     conn = duckdb.connect(DB)
-    movies = conn.execute(f"""
-        SELECT DISTINCT title, MAX(popularity) OVER (PARTITION BY title) AS popularity, release_date, poster_path FROM movies
-        {get_filters(genre, year)}
-        ORDER BY popularity DESC
-        LIMIT 10
-    """).fetchall()
+    query = build_query(genre, year)
+    movies = conn.execute(query).fetchall()
 
     genre = '' if genre == 'All' else genre
     year = 'All Time' if year == 'All' else year
