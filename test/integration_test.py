@@ -6,7 +6,6 @@ import requests
 
 from backend.tmdb_data_collector.genres import drop_genres_table, create_genres_table, insert_into_genres
 from backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
-from backend.utils import get_years, get_genre_ids
 
 TEST_DB = 'integration_test.duckdb'
 conn = duckdb.connect(TEST_DB)
@@ -26,8 +25,8 @@ def test_integration_test():
     insert_into_genres(conn, genres)
 
     # 2. create and populate movie table
-    years = get_years()
-    genre_ids = get_genre_ids()
+    years = list(range(2019, 2025))
+    genre_ids = dict(conn.query("""SELECT * FROM genres""").fetchall())
     drop_movies_table(conn)
     create_movies_table(conn)
     for genre, genre_id in genre_ids.items():
@@ -42,7 +41,7 @@ def test_integration_test():
             time.sleep(1)
 
     # 3. assert movie data is retrieved correctly
-    for genre, year in zip(get_genre_ids(), get_years()):
+    for genre, year in zip(genre_ids, years):
         movies_of_genre_year = conn.query(f"SELECT * FROM movies WHERE genre='{genre}' AND year={year}").fetchall()
         assert len(movies_of_genre_year) > 0
 
