@@ -1,4 +1,3 @@
-from pathlib import Path
 from prometheus_client import make_asgi_app, CollectorRegistry, multiprocess
 
 
