@@ -2,7 +2,7 @@ import duckdb
 
 from datetime import datetime
 
-from database.utils import DB
+from backend.database.utils import DB
 
 
 def get_years() -> list[int]:
