@@ -4,8 +4,8 @@ import time
 import duckdb
 import requests
 
-from src.backend.tmdb_data_collector.genres import drop_genres_table, create_genres_table, insert_into_genres
-from src.backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
+from backend.tmdb_data_collector.genres import drop_genres_table, create_genres_table, insert_into_genres
+from backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
 from src.backend.utils import get_years, get_genre_ids
 
 TEST_DB = 'integration_test.duckdb'
@@ -17,7 +17,7 @@ def test_integration_test():
     url = "https://api.themoviedb.org/3/genre/movie/list?language=en"
     headers = {
         "accept": "application/json",
-        "Authorization": f"Bearer {os.environ.get('BEARER_TOKEN')}"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2MTNjZjYzYzE3YTRlNjU4OTQ5MDM3NmE1M2EyZmU3ZiIsInN1YiI6IjY2NjRiZTYxMGE2YTRjN2FkMWU5OTdlNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.XzPdW6GSVc-zhM1WgxDcTQWzUPyUTIRyiurHv0TLSEc"
     }
     response = requests.get(url, headers=headers)
     genres = response.json().get('genres')

@@ -1,7 +1,7 @@
 import duckdb
 import pytest
 
-from src.backend.tmdb_data_collector.genres import create_genres_table, drop_genres_table, insert_into_genres
+from backend.tmdb_data_collector.genres import create_genres_table, drop_genres_table, insert_into_genres
 
 TEST_DB = 'unit_test.duckdb'
 conn = duckdb.connect(TEST_DB)

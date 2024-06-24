@@ -2,7 +2,7 @@ import duckdb
 import pytest
 from datetime import datetime
 
-from src.backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
+from backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
 
 TEST_DB = 'unit_test.duckdb'
 conn = duckdb.connect(TEST_DB)
