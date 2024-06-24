@@ -16,7 +16,7 @@ def test_integration_test():
     url = "https://api.themoviedb.org/3/genre/movie/list?language=en"
     headers = {
         "accept": "application/json",
-        "Authorization": "Bearer " + os.environ['BEARER_TOKEN']
+        "Authorization": "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2MTNjZjYzYzE3YTRlNjU4OTQ5MDM3NmE1M2EyZmU3ZiIsInN1YiI6IjY2NjRiZTYxMGE2YTRjN2FkMWU5OTdlNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.XzPdW6GSVc-zhM1WgxDcTQWzUPyUTIRyiurHv0TLSEc"
     }
     response = requests.get(url, headers=headers)
     genres = response.json().get('genres')
