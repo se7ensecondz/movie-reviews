@@ -1,4 +1,4 @@
-from backend.data_analyzer import build_query
+from src.backend.data_analyzer import build_query
 
 
 def test_build_query_all_all():

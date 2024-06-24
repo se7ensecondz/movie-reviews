@@ -4,9 +4,9 @@ import time
 import duckdb
 import requests
 
-from backend.tmdb_data_collector.genres import drop_genres_table, create_genres_table, insert_into_genres
-from backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
-from backend.utils import get_years, get_genre_ids
+from src.backend.tmdb_data_collector.genres import drop_genres_table, create_genres_table, insert_into_genres
+from src.backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
+from src.backend.utils import get_years, get_genre_ids
 
 TEST_DB = 'integration_test.duckdb'
 conn = duckdb.connect(TEST_DB)
