@@ -1,8 +1,3 @@
-from prometheus_client import make_asgi_app, CollectorRegistry, multiprocess
+from prometheus_client import make_asgi_app
 
-
-# Using multiprocess collector for registry
-def make_metrics_app():
-    registry = CollectorRegistry()
-    multiprocess.MultiProcessCollector(registry)
-    return make_asgi_app(registry=registry)
+metrics_app = make_asgi_app()

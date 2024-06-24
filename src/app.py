@@ -1,19 +1,15 @@
-from pathlib import Path
-
 import duckdb
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
+from src.backend.prometheus_metrics import metrics_app
 from src.backend.data_analyzer import build_query
-from src.backend.healthcheck import healthcheck_router
 from src.backend.database.utils import DB
-from src.backend.prometheus_metrics import make_metrics_app
+from src.backend.healthcheck import healthcheck_router
 from src.backend.utils import get_years, get_genre_ids
 
 app = FastAPI(debug=False)
 app.include_router(healthcheck_router)
-
-metrics_app = make_metrics_app()
 app.mount("/metrics", metrics_app)
 
 
