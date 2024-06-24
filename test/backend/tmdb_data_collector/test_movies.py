@@ -1,6 +1,6 @@
-import duckdb
-import pytest
 from datetime import datetime
+
+import duckdb
 
 from backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
 
@@ -8,8 +8,8 @@ TEST_DB = 'unit_test.duckdb'
 conn = duckdb.connect(TEST_DB)
 
 
-@pytest.mark.order(1)
 def test_create_movies_table():
+    drop_movies_table(conn)
     create_movies_table(conn)
     tables = conn.query("SHOW TABLES").fetchall()
     assert len(tables) == 1
@@ -17,14 +17,12 @@ def test_create_movies_table():
     drop_movies_table(conn)
 
 
-@pytest.mark.order(2)
 def test_drop_movies_table():
     drop_movies_table(conn)
     tables = conn.query("SHOW TABLES").fetchall()
     assert len(tables) == 0
 
 
-@pytest.mark.order(3)
 def test_insert_into_genres():
     drop_movies_table(conn)
     create_movies_table(conn)
