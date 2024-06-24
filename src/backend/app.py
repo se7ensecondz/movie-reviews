@@ -2,11 +2,11 @@ import duckdb
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-from data_analyzer import build_query
-from healthcheck import healthcheck_router
-from database.utils import DB
-from prometheus_metrics import make_metrics_app
-from utils import get_years, get_genre_ids
+from backend.data_analyzer import build_query
+from backend.healthcheck import healthcheck_router
+from backend.database.utils import DB
+from backend.prometheus_metrics import make_metrics_app
+from backend.utils import get_years, get_genre_ids
 
 app = FastAPI(debug=False)
 app.include_router(healthcheck_router)
