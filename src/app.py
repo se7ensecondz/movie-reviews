@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import duckdb
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -7,6 +9,10 @@ from src.backend.healthcheck import healthcheck_router
 from src.backend.database.utils import DB
 from src.backend.prometheus_metrics import make_metrics_app
 from src.backend.utils import get_years, get_genre_ids
+
+import os
+os.environ['PROMETHEUS_MULTIPROC_DIR'] = str(Path(__file__).parent / 'metrics')
+
 
 app = FastAPI(debug=False)
 app.include_router(healthcheck_router)
