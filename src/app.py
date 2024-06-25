@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 from src.backend.prometheus_metrics import metrics_app
-from src.backend.data_analyzer import build_query
+from src.backend.data_analyzer import most_popular_of_genre_year
 from src.backend.database.utils import DB
 from src.backend.healthcheck import healthcheck_router
 from src.backend.utils import get_years, get_genre_ids
@@ -49,7 +49,7 @@ def main():
 @app.get('/search')
 def search(genre, year):
     conn = duckdb.connect(DB)
-    query = build_query(genre, year)
+    query = most_popular_of_genre_year(genre, year)
     movies = conn.execute(query).fetchall()
 
     genre = '' if genre == 'All' else genre

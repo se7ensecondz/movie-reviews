@@ -1,7 +1,7 @@
 import duckdb
 import os
 
-from backend.tmdb_data_collector.genres import create_genres_table, drop_genres_table, insert_into_genres
+from backend.tmdb_data_collector.genres import create_genres_table, drop_genres_table, insert_genres
 
 TEST_DB = 'unit_test.duckdb'
 conn = duckdb.connect(TEST_DB)
@@ -30,7 +30,7 @@ def test_insert_into_genres():
         {'id': 43, 'name': 'Comedy'},
         {'id': 44, 'name': 'Foobar'},  # should not be inserted
     ]
-    insert_into_genres(conn, mock_genres)
+    insert_genres(conn, mock_genres)
     actual_genres = conn.query("SELECT * FROM genres").fetchall()
     actual_genres = sorted(actual_genres, key=lambda x: x[1], reverse=False)
     expected_genres = [('Action', 42), ('Comedy', 43)]

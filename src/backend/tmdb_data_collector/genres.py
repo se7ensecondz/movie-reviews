@@ -10,7 +10,7 @@ def create_genres_table(conn):
     conn.commit()
 
 
-def insert_into_genres(conn, genres):
+def insert_genres(conn, genres):
     interested_genres = {
         'Action',
         'Comedy',
@@ -22,5 +22,5 @@ def insert_into_genres(conn, genres):
         genre_id = int(genre['id'])
         genre_name = genre["name"]
         if genre_name in interested_genres:
-            conn.execute(f"""INSERT INTO genres VALUES ('{genre_name}', {genre_id})""")
+            conn.execute(f"""INSERT OR REPLACE INTO genres VALUES ('{genre_name}', {genre_id})""")
     conn.commit()

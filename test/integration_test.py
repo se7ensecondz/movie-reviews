@@ -4,14 +4,14 @@ import time
 import duckdb
 import requests
 
-from backend.tmdb_data_collector.genres import drop_genres_table, create_genres_table, insert_into_genres
+from backend.tmdb_data_collector.genres import drop_genres_table, create_genres_table, insert_genres
 from backend.tmdb_data_collector.movies import drop_movies_table, create_movies_table, insert_movies
-
-TEST_DB = 'integration_test.duckdb'
-conn = duckdb.connect(TEST_DB)
 
 
 def test_integration_test():
+    TEST_DB = 'integration_test.duckdb'
+    conn = duckdb.connect(TEST_DB)
+
     # 1. create and populate genre table
     url = "https://api.themoviedb.org/3/genre/movie/list?language=en"
     headers = {
@@ -22,7 +22,7 @@ def test_integration_test():
     genres = response.json().get('genres')
     drop_genres_table(conn)
     create_genres_table(conn)
-    insert_into_genres(conn, genres)
+    insert_genres(conn, genres)
 
     # 2. create and populate movie table
     years = list(range(2019, 2025))
@@ -50,5 +50,4 @@ def test_integration_test():
     drop_movies_table(conn)
     conn.close()
 
-
-os.remove(TEST_DB)
+    os.remove(TEST_DB)
